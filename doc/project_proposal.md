@@ -56,11 +56,13 @@ We will use the following datasets:
   c. Number of Columns: 26
 
 2. Gened Dataset (https://github.com/wadefagen/datasets/tree/main/geneds): This dataset will map each course to what GenED it satisfies. This will simplify the logic for GenED requirements for each major, as this data is nicely stored in a preexisting csv.
+   
   a. Data Type: CSV file 
   b. Number of Rows: 1061
   c. Number of Columns: 11
 
-3. GPA Dataset: This dataset hosts the gpa averages for each course across previous semesters, broken down by teacher. 
+4. GPA Dataset: This dataset hosts the gpa averages for each course across previous semesters, broken down by teacher.
+   
   a. Data Type: CSV file 
   b. Number of Rows: 74600
   c. Number of Columns: 23
@@ -113,6 +115,7 @@ As seen by the below breakdown, some tasks are dependent on the successful compl
 **Non Task 1 dependent tasks Team**: Ritsika, Rikhita  
 
 1. TASK 1: Dataset Creation and Cleaning:
+   
   a. Build cleaned dataset mapping each course to its prerequisites/allowed concurrent enrollment
    i. Assigned Person: Leisha
    ii. Backend Tasks: creating dataset and relational model to store information
@@ -123,14 +126,78 @@ As seen by the below breakdown, some tasks are dependent on the successful compl
 2. Onboarding flow
   a. Allow users to provide initial information:
    i. Non Task 1 Dependent 
-    1. Major 
+    1. Major
+       
      a. Assigned Person: Ritsika 
      b. Backend Tasks: update user table with major 
-    2. Courses completed  
+    2. Courses completed
+       
      a. Assigned Person: Rikhita 
      b. Backend Tasks: update user table with inputted courses, pull course list from dataset
-    3. Semesters remaining  
+    3. Semesters remaining
+       
      a. Assigned Person: Ritsika 
-     b. Backend Tasks: update user table with selected semesters 
+     b. Backend Tasks: update user table with selected semesters
+
+3. Course Views
+   
+ a. Tabular view of courses 
+  i. Non Task 1 Dependent 
+   1. Columns
+      
+    a. Course Code 
+    b. Course Name
+    c. Description 
+    d. GPA 
+   2. Filter and Sort
+    a. GPA
+   3. Assigned Person: Ritsika
+   4. Backend Tasks: pull information from Course Catalog Data, calculate gpa for each course, correspond with Course Catalog Data, build filtering logic by gpa, build sorting logic by GPA
+
+  ii. Task 1 Dependent 
+   1. Columns:
+      
+    a. Semester Eligibility 
+     i. If eligible, state semester eligibility
+     ii. Else state, not eligible 
+     
+    b. Filter and Sort
+     i. Filter out courses “not eligible”
+     ii. Filter for courses eligible for given semester
+     iii. Sort courses by semester eligibility 
+  2. Assigned Person: Leisha
+  3. Backend Tasks: pull courses taken by student, calculate eligibility, building filtering based on calculation
+
+4. Semester Planner
+   
+ a. Non task 1 dependent 
+  i. Information
+   1. View of planned courses 
+   2. Information on credit hour thresholds 
+  ii. Assigned Person: Ritsika
+  iii. Backend Tasks: pull courses added by student, pull credit hour information and calculate if student is within threshold
+
+5. Course Information Page
+   
+ a. Non Task 1 Dependent 
+  i. Teacher breakdown of GPA
+   1. Assigned Person: Rikhita 
+   2. Backend Tasks: pull and aggregate data in gpa dataset
+      
+ b. Task 1 Dependent 
+  i. Prerequisites 
+   1. Assigned Person: Bavya
+   2. Backend Tasks: Pull from table 
+  ii. Concurrent Enrollment 
+   1. Assigned Person: Bavya
+   2. Backend Tasks: pull from table
+  iii. Semester Eligibility 
+   1. Assigned Person: Bavya
+   2. Backend Tasks: Pull calculation from tabular view 
+  iv. Degree Requirement Fulfillment
+   1. Assigned Person: Bavya
+   2. Backend Tasks: pull from table
+
+We expect this list of assigned tasks to change based on discovered workload. However, this serves to initially guide us. 
 
 
