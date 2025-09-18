@@ -65,5 +65,72 @@ We will use the following datasets:
   b. Number of Rows: 74600
   c. Number of Columns: 23
 
+We will build the following dataset: 
+1. Degree Requirements. This dataset will store for all CS and CS+X majors, what the degree requirements are and what courses fulfill them, given that the degree requirement is not a GenED. Since we are dealing with a small size of majors, we will manually build this dataset based on the information needed for our application logic.
+ a. We will source this information from this site: https://catalog.illinois.edu/undergraduate/eng_las/statistics-computer-science-bslas/#degreerequirementstext
+ b. We expect two tables with following columns:
+  i. Course Info
+     1. Course Code
+     2. Course Name
+     3. Degree Requirement Fulfilled
+
+  ii. Degree Requirements 
+     1. Degree Requirement Fulfilled
+     2. Minimum Required Credit Hours 
+     3. Major Attribution (what major this degree requirement for)
+
+### Detailed Functionality:
+
+#### User Interactions
+
+* Users will select their major, pending semesters, and check all the courses they have completed so far from a prepopulated list. 
+* User will be able to view their pending requirements.
+* User will be able to click each pending requirement and it will go to a new page where they will be able to filter the courses satisfying that requirement either by GPA averages, eligibility from prerequisites completed or planned, and/or by semester based eligibility.
+  * Example: A student planning CS233 in FA24 will be able to see that while they are eligible for CS341, they won't be eligible till SP25. A student who has not completed or planned for CS233 will show up as not eligible for CS341)
+* User can view prerequisites for each course.
+* User will be able to create their degree plan for each pending semester where they can add each class only if their prerequisites are satisfied and their credit hour requirements are met.
+* Users can also update/delete courses from their degree plan to test alternative courses.
+
+#### Functionality: 
+
+* **(Student)Add/Insert** - Student setting up the web application for the first time, the students will submit[major, year, pending semesters, and completed courses)
+* **(Student)Update** - When changing their completed semester or degree major we update the database with [year, degree name]
+* **(Student)Delete** - When student removes an old completed courses or deletes their major we remove the major associated with the student, removing pending semesters
+* **(Student)Add/Insert** - When building future semesters based on their previous semester and pending courses,  we insert new data to database with the following: [term, year, max_credits]
+* **(Student)Add/Insert** - When the student fills the future planning, they submit[course_id, semsester_id](this is blocked if any of the prerequisites are not met)
+* **(Student)Update** - When tuning their search for various courses the student submits[avg_gpa_min, avg_gpa_max]
+* **Admin(Add/Insert)** - When adding new courses or refreshing courses we submit[subject, number, title, credits, description, avg_gpa, offered_terms]
+* **Admin(Update/Delete)** - When correcting an existing course we submit[subject, number, title, credits, description, avg_gpa, offered_terms]
+
+### Low fidelity UI mockup:
+
+https://drive.google.com/file/d/1f8zpV_cXJC-J7w-5WRFqZKf6IdDVUMcH/view?usp=sharing
+
+### Teamwork Distribution:
+
+As seen by the below breakdown, some tasks are dependent on the successful completion of Task 1. Therefore, we will follow this distribution of work:
+**Task 1 dependent tasks Team**: Leisha, Bavya 
+**Non Task 1 dependent tasks Team**: Ritsika, Rikhita  
+
+1. TASK 1: Dataset Creation and Cleaning:
+  a. Build cleaned dataset mapping each course to its prerequisites/allowed concurrent enrollment
+   i. Assigned Person: Leisha
+   ii. Backend Tasks: creating dataset and relational model to store information
+  b. Build dataset mapping each major to its degree requirements and courses fulfilling it 
+   i. Assigned Person: Bavya
+   ii. Backend Tasks: parsing section info string, storing prerequisite information by course 
+
+2. Onboarding flow
+  a. Allow users to provide initial information:
+   i. Non Task 1 Dependent 
+    1. Major 
+     a. Assigned Person: Ritsika 
+     b. Backend Tasks: update user table with major 
+    2. Courses completed  
+     a. Assigned Person: Rikhita 
+     b. Backend Tasks: update user table with inputted courses, pull course list from dataset
+    3. Semesters remaining  
+     a. Assigned Person: Ritsika 
+     b. Backend Tasks: update user table with selected semesters 
 
 
