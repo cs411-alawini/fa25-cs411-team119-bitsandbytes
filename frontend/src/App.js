@@ -9,17 +9,16 @@ function App() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [netIdInput, setNetIdInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
-
-  const fetchCourses = async () => {
+  const fetchCourses = async (search = '') => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${API_BASE_URL}/courses`);
+      const params = search.trim() ? { search: search.trim() } : {};
+      const response = await axios.get(`${API_BASE_URL}/courses`, { params });
       setCourses(response.data);
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Failed to fetch courses. Please try again.';
@@ -30,25 +29,71 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchCourses(searchQuery);
+    }, 300); // Debounce search by 300ms
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  const handleViewPlanner = (e) => {
+    e.preventDefault();
+    if (netIdInput.trim()) {
+      navigate(`/planner/${netIdInput.trim()}`);
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>CS Degree Planner</h1>
+        <form onSubmit={handleViewPlanner} className="planner-nav-form">
+          <input
+            type="text"
+            value={netIdInput}
+            onChange={(e) => setNetIdInput(e.target.value)}
+            placeholder="Enter Net ID to view planner"
+            className="planner-nav-input"
+          />
+          <button type="submit" className="planner-nav-button">View Planner</button>
+        </form>
       </header>
 
       <main className="App-main">
         <div className="container">
+          {/* Search */}
+          <div className="search-container">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by course code (e.g., CS101, MATH200)"
+              className="search-input"
+            />
+            {searchQuery && (
+              <div className="search-results-count">
+                {courses.length} course{courses.length !== 1 ? 's' : ''} found
+              </div>
+            )}
+          </div>
           {/* Course List */}
           <div className="table-container">
             <div className="table-header">
-              <h3>Courses ({courses.length} courses)</h3>
+              <h3>Courses ({courses.length} course{courses.length !== 1 ? 's' : ''})</h3>
             </div>
             {loading ? (
               <div className="loading-message">Loading courses...</div>
             ) : error ? (
               <div className="no-data-message">{error}</div>
             ) : courses.length === 0 ? (
-              <div className="no-data-message">No courses found.</div>
+              <div className="no-data-message">
+                {searchQuery ? `No courses found matching "${searchQuery}"` : 'No courses found.'}
+              </div>
             ) : (
               <table className="courses-table">
                 <thead>
@@ -92,3 +137,4 @@ function App() {
 }
 
 export default App;
+

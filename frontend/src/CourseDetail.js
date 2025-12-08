@@ -12,6 +12,11 @@ function CourseDetail() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [net_id, setNet_id] = useState('');
+  const [semester, setSemester] = useState('Fall');
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [addingCourse, setAddingCourse] = useState(false);
+  const [addMessage, setAddMessage] = useState(null);
 
   useEffect(() => {
     fetchCourseDetails();
@@ -28,6 +33,37 @@ function CourseDetail() {
       console.error('Error fetching course details:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddToSemester = async (e) => {
+    e.preventDefault();
+    setAddingCourse(true);
+    setAddMessage(null);
+    
+    try {
+      const response = await axios.post(`${API_BASE_URL}/courses/semester/add`, {
+        net_id: net_id,
+        semester: semester,
+        year: parseInt(year),
+        course_code: courseCode
+      });
+      
+      const successText = response.data.message || 'Course successfully added to semester!';
+      setAddMessage({ 
+        type: 'success', 
+        text: successText,
+        showPlannerLink: true
+      });
+      // Reset form (keep net_id so user can add more courses)
+      setSemester('Fall');
+      setYear(new Date().getFullYear());
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Failed to add course to semester';
+      setAddMessage({ type: 'error', text: errorMsg });
+      console.error('Error adding course to semester:', err);
+    } finally {
+      setAddingCourse(false);
     }
   };
 
@@ -225,6 +261,75 @@ function CourseDetail() {
           ) : (
             <div className="no-data-message">No concurrent enrollment options available for this course.</div>
           )}
+        </section>
+
+        {/* Add to Semester */}
+        <section className="section">
+          <h2>Add to Semester</h2>
+          <form onSubmit={handleAddToSemester} className="add-semester-form">
+            <div className="form-group">
+              <label htmlFor="net_id">Net ID:</label>
+              <input
+                type="text"
+                id="net_id"
+                value={net_id}
+                onChange={(e) => setNet_id(e.target.value)}
+                required
+                placeholder="Enter your Net ID (e.g., lgarg10)"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="semester">Semester:</label>
+              <select
+                id="semester"
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+                required
+              >
+                <option value="Fall">Fall</option>
+                <option value="Spring">Spring</option>
+                <option value="Summer">Summer</option>
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="year">Year:</label>
+              <input
+                type="number"
+                id="year"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                required
+                min="2020"
+                max="2030"
+              />
+            </div>
+            
+            <button 
+              type="submit" 
+              className="add-course-btn"
+              disabled={addingCourse}
+            >
+              {addingCourse ? 'Adding...' : 'Add Course to Semester'}
+            </button>
+            
+            {addMessage && (
+              <div className={`message ${addMessage.type === 'success' ? 'success-message' : 'error-message'}`}>
+                {addMessage.text}
+                {addMessage.showPlannerLink && net_id && (
+                  <div style={{ marginTop: '12px' }}>
+                    <button 
+                      onClick={() => navigate(`/planner/${net_id}`)}
+                      className="view-planner-link"
+                    >
+                      View My Planner →
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </form>
         </section>
       </main>
     </div>
